@@ -1,0 +1,21 @@
+extends ../layout
+
+// layout.pug에 있는 content block과 연결
+block content
+    table.w3-table-all
+        tr
+            th NO
+            th 도서명
+            th 저자
+            th 출판사
+            th 가격
+
+            // books List를 순회하면서 book에 하나씩. html의 forEach와 같다
+        each book, index in books
+            tr.book_tr
+                td= index + 1
+                td= book.bTitle
+                td= book.bWriter
+                td= book.bComp
+                td= book.bPrice
+    button.w3-button.w3-blue.w3-right.btn-insert 추가
