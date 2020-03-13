@@ -1,0 +1,88 @@
+extends ../layout
+
+block content
+    script.
+        $(function(){
+            $('div').addClass('w3-padding-16')
+            $('input').addClass('w3-input w3-border w3-hover-light-gray')
+            $('label').addClass('w3-text-blue w3-bold')
+
+            $('button.btn-list').click(function(){
+                document.location.replace('/gallery') 
+            })
+
+            var updateCallBack = function(){
+                $.ajax({
+                    url : '/gallery/update/#{gallery._id}',
+                    type : 'PUT', // type을 PUT으로
+                    data : $('form').serialize() // form을 ajax로 보낼땐 serialize를 사용
+                })
+                .done(function(result){ // promise 방식 사용. success시
+                    if(result.msg == 'OK'){
+                        alert(result.data.nModified + '개의 변경 성공')
+                        document.location.replace('/gallery/view/#{gallery._id}')
+                    }
+                    else if(result.msg == 'UPDATE FAIL'){
+                        if(result.data.nModified < 1){ // 몽고에서 변경된 데이터 개수를 감지해서 0개면 update를 하지 않음
+                            alert('데이터를 업데이트하지 못함')
+                        }
+                    }
+                })
+                .fail(function(err){ // promise 방식. error시
+                    alert('서버와 통신오류 발생')
+                })
+                .always(function(){ // promise 방식. ajax가 실행되고 나서 항상 실행되는 함수
+                    // alert('항상 동작하는 함수 동작 complete')
+                })
+            }
+
+            let version = '!{gallery.__v}' // 언더바 2개 v. 몽고에서 내용물을 보면 최초에 값을 입력하면 __v 값이 0이다. 이 변수에 있는 값을 기준으로 수정인지, 추가인지 여부를 확인
+            // 수정이면 ajax로 동작하도록
+
+
+
+            $('button.btn-save').click(function(){
+                if(version != ''){
+                    // 테스트코드 alert('수정')
+                    updateCallBack()
+                    return false
+                }
+
+                alert('추가')
+
+                if($("#gStrTitle").val() == '') {
+                    alert('사진 제목을 입력하세요')
+                    $("#gStrTitle").focus()
+                    return false
+                }
+                if($("#gStrText").val() == '') {
+                    alert('사진 설명을 입력하세요')
+                    $("#gStrText").focus()
+                    return false
+                }
+                if($("#gOriginalPhtoName").val() == '') {
+                    alert('사진파일을 선택하세요')
+                    return false
+                }
+                $('form').submit()
+            })
+
+        })
+    section.w3-container.w3-padding-32
+        form(method='POST',enctype='multipart/form-data')
+            div
+                label 사진제목
+                input#gStrTitle(name='gStrTitle',value=gallery.gStrTitle)
+            div
+                label 사진설명
+                input#gStrText(name='gStrText',value=gallery.gStrText)
+            div
+                label 원본사진
+                input#gOriginalPhtoName(type='file',name='gOriginalPhtoName',value=gallery.gOriginalPhtoName)
+            div
+                label 업로드한 시각
+                input#gUpLoadStartDate(type='datetime', name='gUpLoadStartDate',value=gallery.gUpLoadStartDate)
+            div
+                button(type='button').w3-button.w3-green.w3-right.btn-list 리스트로 가기
+                button(type='button').w3-button.w3-blue.w3-right.btn-save 저장
+                
