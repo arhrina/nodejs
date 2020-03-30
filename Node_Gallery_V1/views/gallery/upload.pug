@@ -11,43 +11,38 @@ block content
                 document.location.replace('/gallery') 
             })
 
-            var updateCallBack = function(){
+            var updateCB = function(){
                 $.ajax({
                     url : '/gallery/update/#{gallery._id}',
-                    type : 'PUT', // type을 PUT으로
-                    data : $('form').serialize() // form을 ajax로 보낼땐 serialize를 사용
+                    type : 'PUT',
+                    data : $('form').serialize()
                 })
-                .done(function(result){ // promise 방식 사용. success시
-                    if(result.msg == 'OK'){
-                        alert(result.data.nModified + '개의 변경 성공')
+                .done(function(result){ // 성공했을때
+                    if(result.msg == 'OK') {
+                        alert(result.data.nModified + " 개의 변경 성공")
                         document.location.replace('/gallery/view/#{gallery._id}')
-                    }
-                    else if(result.msg == 'UPDATE FAIL'){
-                        if(result.data.nModified < 1){ // 몽고에서 변경된 데이터 개수를 감지해서 0개면 update를 하지 않음
-                            alert('데이터를 업데이트하지 못함')
+                    } else if ( result.msg == 'UPATE FAIL') {
+                        if(result.data.nModified < 1) {
+                            alert('데이터를 업데이트 하지 못함')
                         }
                     }
+                
+               })
+                .fail(function(err){ // 실패 했을때
+                    alert('서버와 통신 오류')
                 })
-                .fail(function(err){ // promise 방식. error시
-                    alert('서버와 통신오류 발생')
-                })
-                .always(function(){ // promise 방식. ajax가 실행되고 나서 항상 실행되는 함수
-                    // alert('항상 동작하는 함수 동작 complete')
+                .always(function(){ // 항상
+                    // alert('항상 완료')
                 })
             }
 
-            let version = '!{gallery.__v}' // 언더바 2개 v. 몽고에서 내용물을 보면 최초에 값을 입력하면 __v 값이 0이다. 이 변수에 있는 값을 기준으로 수정인지, 추가인지 여부를 확인
-            // 수정이면 ajax로 동작하도록
-
-
+            let version = '!{gallery.__v}'
 
             $('button.btn-save').click(function(){
-                if(version != ''){
-                    // 테스트코드 alert('수정')
-                    updateCallBack()
+                if(version != '') {
+                    updateCB()
                     return false
                 }
-
                 alert('추가')
 
                 if($("#gStrTitle").val() == '') {

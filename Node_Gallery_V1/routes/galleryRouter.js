@@ -43,38 +43,39 @@ var saveFile = multer({storage:saveOptions})
             .single("gOriginalPhtoName")
 
 router.get('/',(req,res)=>{
-    galleryVO.find({}) // promise 방식
-    .exec((err, galleries)=>{
-        res.render('index', {galleryList:galleries}) // 리스트를 뽑아서 index.pug로 전송
+    galleryVO.find({})
+    .exec((err,galleries)=>{
+        res.render('index',{galleryList:galleries})
     })
 })
 
-
-router.get('/view/:id', (req, res)=>{
-    let id = req.params.id
-    galleryVO.findOne({_id:id}) // _id가 매개변수 id랑 같은게 있으면
-    .exec((err, data)=>{
-        res.render('gallery/view', {gallery:data})
-    })
-})
-
-
-router.get('/update/:id', (req, res)=>{
+router.get('/view/:id',(req,res)=>{
     let id = req.params.id
     galleryVO.findOne({_id:id})
-    .exec((err, data)=>{
-        res.render('gallery/upload', {gallery:data})
+    .exec((err,data)=>{
+        res.render('gallery/view',{gallery:data})
     })
 })
 
-// put 메서드
-// RESTfull 방식에서 사용할 수 있는 4가지 메서드인 get, post, put, delete 중 하나. get, post는 form/link를 이용할 수 있음. put, delete는 ajax만을 사용해야함
-router.put('/update/:id', (req, res)=>{
-    var id = req.params.id
-    galleryVO.update({_id:id}, {$set:req.body}) // update 수행
-    .exec((err, data)=>{
-        // res.redirect('/gallery/view/' + id)
-        if(err){
+router.get('/update/:id',(req,res)=>{
+    let id = req.params.id
+    galleryVO.findOne({_id:id})
+    .exec((err,data)=>{
+        res.render('gallery/upload',{gallery:data})
+    })
+})
+
+// put method
+// RESTfull 방식에서 사용할수 있는 4가지 method
+//  get, post, put, delete
+// 이중 put과 delete는 ajax를 사용해야만 구현이 된다.
+router.put('/update/:id',(req,res)=>{
+
+   var id = req.params.id
+    console.log(id)
+    galleryVO.update({_id:id},{$set : req.body})
+    .exec((err,data)=>{
+        if(err) {
             res.json({
                 msg : 'UPDATE FAIL',
                 data : data
@@ -85,14 +86,18 @@ router.put('/update/:id', (req, res)=>{
                 data : data
             })
         }
+        // res.redirect('/gallery/view/' + id)
+
+
     })
 })
-
 
 router.get('/upload',(req,res)=>{
     var gallery = new galleryVO()
     res.render('gallery/upload',{gallery:gallery})
 })
+
+
 
 
 /*

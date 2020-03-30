@@ -4,16 +4,12 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
-var mongoose = require('mongoose')
-mongoose.connect("mongodb://localhost/mydb") // 실제 DB Connection 동작. dbConn을 만드는건 오류 등의 로그를 보기 위해 만드는 것
-
-
+var mongoose = require("mongoose")
+mongoose.connect("mongodb://localhost/mydb")
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-
-var bookRouter = require('./routes/bookRouter');
-
+var bookRouter = require("./routes/bookRouter")
 
 var app = express();
 
@@ -29,8 +25,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-
-app.use('/book', bookRouter)
+app.use("/book",bookRouter)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
